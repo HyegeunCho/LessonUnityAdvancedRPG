@@ -6,8 +6,8 @@ public class FllowCamera : MonoBehaviour
 {
     [SerializeField] private GameObject Target;
     
-    void Update()
+    void LateUpdate()
     {
-        GetComponent<Transform>().position = Target.transform.position;
+        transform.position = Target.transform.position;
     }
 }
