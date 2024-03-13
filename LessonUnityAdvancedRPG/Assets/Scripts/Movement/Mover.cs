@@ -1,4 +1,6 @@
 using System;
+using RPG.Combat;
+using RPG.Core;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -6,7 +8,7 @@ namespace RPG.Movement
 {
     [RequireComponent(typeof(NavMeshAgent))]
     [RequireComponent(typeof(Animator))]
-    public class Mover : MonoBehaviour
+    public class Mover : MonoBehaviour, IAction
     {
         private NavMeshAgent _agent;
         private Animator _animator;
@@ -26,17 +28,18 @@ namespace RPG.Movement
             UpdateAnimator();
         }
 
+        public void StartMoveAction(Vector3 destination)
+        {
+            GetComponent<ActionScheduler>().StartAction(this);
+            MoveTo(destination);
+        }
+        
         public void MoveTo(Vector3 destination)
         {
             _agent.SetDestination(destination);
             _agent.isStopped = false;
         }
 
-        public void Stop()
-        {
-            _agent.isStopped = true;
-        }
-    
         private void UpdateAnimator()
         {
             /// _agent.velocity는 월드에서의 유닛의 위치와 목적지에 대한 속도를 갖고 있음
@@ -46,6 +49,17 @@ namespace RPG.Movement
             // Global을 Local로 변환 처리
             var localVelocity = transform.InverseTransformDirection(_agent.velocity);
             _animator.SetFloat("forwardSpeed", localVelocity.z);
+        }
+
+
+        public void StartAction(Transform inTransform)
+        {
+            MoveTo(inTransform.position);
+        }
+
+        public void Cancel()
+        {
+            _agent.isStopped = true;
         }
     }
 }

@@ -12,11 +12,14 @@ namespace RPG.Control
     public class PlayerController : MonoBehaviour
     {
         private Mover _mover;
+
+        private Fighter _fighter;
         // Start is called before the first frame update
     
         void Start()
         {
             _mover = GetComponent<Mover>();
+            _fighter = GetComponent<Fighter>();
         }
 
         // Update is called once per frame
@@ -45,7 +48,8 @@ namespace RPG.Control
             if (!Physics.Raycast(GetMouseRay(), out RaycastHit hit)) return false;
             if (Input.GetMouseButton(0))
             {
-                _mover.MoveTo(hit.point);
+                _mover.StartMoveAction(hit.point);
+                // _fighter.Cancel();
             }
             return true;
         }
