@@ -29,6 +29,12 @@ namespace RPG.Movement
         public void MoveTo(Vector3 destination)
         {
             _agent.SetDestination(destination);
+            _agent.isStopped = false;
+        }
+
+        public void Stop()
+        {
+            _agent.isStopped = true;
         }
     
         private void UpdateAnimator()
