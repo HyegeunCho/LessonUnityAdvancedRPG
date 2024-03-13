@@ -7,11 +7,18 @@ using UnityEngine;
 
 namespace RPG.Combat
 {
+    [RequireComponent(typeof(Animator))]
     public class Fighter : MonoBehaviour, IAction
     {
         [SerializeField] private float weaponRange = 2f;
         
         private Transform target;
+        private Animator _animator;
+
+        private void Start()
+        {
+            _animator = GetComponent<Animator>();
+        }
 
         private void Update()
         {
@@ -24,7 +31,13 @@ namespace RPG.Combat
             else
             {
                 GetComponent<Mover>().Cancel();
+                AttackBehaviour();
             }
+        }
+
+        private void AttackBehaviour()
+        {
+            _animator.SetTrigger("attack");
         }
 
         public void Attack(CombatTarget inTarget)
@@ -41,6 +54,13 @@ namespace RPG.Combat
         public void Cancel()
         {
             target = null;
+            _animator.ResetTrigger("attack");
+        }
+        
+        // Animation Event 
+        void Hit()
+        {
+            
         }
     }
 }
