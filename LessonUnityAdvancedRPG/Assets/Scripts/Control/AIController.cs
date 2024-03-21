@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using RPG.Combat;
+using RPG.Core;
 using RPG.Movement;
 using UnityEngine;
 
@@ -15,16 +16,19 @@ namespace RPG.Control
         private Mover _mover;
         private Fighter _fighter;
         private GameObject _player;
-
+        private Health _health;
+        
         private void Start()
         {
             _mover = GetComponent<Mover>();
             _fighter = GetComponent<Fighter>();
+            _health = GetComponent<Health>();
             _player = GameObject.FindWithTag("Player");
         }
 
         private void Update()
         {
+            if (_health?.IsDead() ?? true) return;
             if (InteractWithCombat()) return;
             // if (InteractWithMovement()) return;
 

@@ -8,19 +8,23 @@ namespace RPG.Movement
 {
     [RequireComponent(typeof(NavMeshAgent))]
     [RequireComponent(typeof(Animator))]
+    [RequireComponent(typeof(Health))]
     public class Mover : MonoBehaviour, IAction
     {
         private NavMeshAgent _agent;
         private Animator _animator;
-
+        private Health _health;
+        
         void Start()
         {
             _agent = transform.GetComponent<NavMeshAgent>();
             _animator = transform.GetComponent<Animator>();
+            _health = GetComponent<Health>();
         }
 
         void Update()
         {
+            _agent.enabled = !_health.IsDead();
             // if (Input.GetMouseButton(0))
             // {
             //     MoveToCursor();

@@ -18,7 +18,7 @@ namespace RPG.Combat
         
         private Animator _animator;
 
-        private float timeSinceLastAttack = 0;
+        private float timeSinceLastAttack = Mathf.Infinity;
         
         
         private void Start()
