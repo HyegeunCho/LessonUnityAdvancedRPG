@@ -33,7 +33,13 @@ namespace RPG.Control
         {
             RaycastHit[] hits = Physics.RaycastAll(GetMouseRay());
             CombatTarget target = hits.Select(hit => hit.transform.GetComponent<CombatTarget>())
-                .FirstOrDefault(t => t != null);
+                .FirstOrDefault(t =>
+                {
+                    if (t == null) return false;
+                    var health = t.transform.GetComponent<Health>();
+                    return health != null && !health.IsDead();
+                });
+            
             if (target == null) return false;
             
             if (Input.GetMouseButtonDown(0))
