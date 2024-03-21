@@ -65,7 +65,7 @@ namespace RPG.Combat
             target?.TakeDamage(weaponDamage);
         }
 
-        public void Attack(CombatTarget inCombatTarget)
+        public void Attack(GameObject inCombatTarget)
         {
             GetComponent<ActionScheduler>().StartAction(this);
             target = inCombatTarget.GetComponent<Health>();
@@ -83,10 +83,11 @@ namespace RPG.Combat
             _animator.SetTrigger("stopAttack");
         }
 
-        public bool CanAttack()
+        public bool CanAttack(GameObject inTarget)
         {
-            if (target == null) return false;
-            return !target.IsDead();
+            var health = inTarget?.GetComponent<Health>();
+            if (health == null) return false;
+            return !health.IsDead();
         }
     }
 }

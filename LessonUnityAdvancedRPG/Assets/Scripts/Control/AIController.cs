@@ -1,26 +1,70 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using RPG.Combat;
+using RPG.Movement;
 using UnityEngine;
 
 namespace RPG.Control
 {
+    [RequireComponent(typeof(Mover))]
     public class AIController : MonoBehaviour
     {
         [SerializeField] private float chaseDistance = 5f;
 
+        private Mover _mover;
+        private Fighter _fighter;
+        private GameObject _player;
+
+        private void Start()
+        {
+            _mover = GetComponent<Mover>();
+            _fighter = GetComponent<Fighter>();
+            _player = GameObject.FindWithTag("Player");
+        }
+
         private void Update()
         {
-            if (DistanceToPlayer() <= chaseDistance)
+            if (InteractWithCombat()) return;
+            // if (InteractWithMovement()) return;
+
+            if (!InAttackRangeOfPlayer())
             {
-                Debug.LogError($"[{gameObject.name}] Start Chase");
+                // _mover.Cancel();
+                _fighter.Cancel();
+                return;
             }
         }
 
-        private float DistanceToPlayer()
+        private bool InAttackRangeOfPlayer()
         {
-            var player = GameObject.FindWithTag("Player");
-            return Vector3.Distance(player.transform.position, transform.position);
+            return Vector3.Distance(_player.transform.position, transform.position) <= chaseDistance;
+        }
+
+        private bool InteractWithCombat()
+        {
+            if (!InAttackRangeOfPlayer()) return false;
+            
+            var health = _player?.GetComponent<Health>();
+            if (health == null || health.IsDead()) return false;
+            
+            _fighter.Attack(_player);
+            return true;
+        }
+
+        private bool InteractWithMovement()
+        {
+            return false;
+
+            // var player = GameObject.FindWithTag("Player");
+            // if (player == null) return false;
+            //
+            // if (DistanceToPlayer() <= chaseDistance)
+            // {
+            //     _mover.StartMoveAction(player.transform.position);
+            // }
+            //
+            // return true;
         }
     }    
 }

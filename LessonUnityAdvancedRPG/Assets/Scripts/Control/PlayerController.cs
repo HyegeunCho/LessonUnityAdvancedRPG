@@ -12,9 +12,7 @@ namespace RPG.Control
     public class PlayerController : MonoBehaviour
     {
         private Mover _mover;
-
         private Fighter _fighter;
-        // Start is called before the first frame update
     
         void Start()
         {
@@ -32,19 +30,19 @@ namespace RPG.Control
         private bool InteractWithCombat()
         {
             RaycastHit[] hits = Physics.RaycastAll(GetMouseRay());
-            CombatTarget target = hits.Select(hit => hit.transform.GetComponent<CombatTarget>())
-                .FirstOrDefault(t =>
-                {
-                    if (t == null) return false;
-                    var health = t.transform.GetComponent<Health>();
-                    return health != null && !health.IsDead();
-                });
+            var target = hits.Select(hit => hit.transform.gameObject).FirstOrDefault(go =>
+            {
+                var combatTarget = go.transform.GetComponent<CombatTarget>();
+                var health = go.transform.GetComponent<Health>();
+                if (combatTarget == null || health == null) return false;
+                return !health.IsDead();
+            });
             
             if (target == null) return false;
             
             if (Input.GetMouseButtonDown(0))
             {
-                GetComponent<Fighter>().Attack(target);
+                _fighter.Attack(target);
             }
             return true;
         }
@@ -55,7 +53,6 @@ namespace RPG.Control
             if (Input.GetMouseButton(0))
             {
                 _mover.StartMoveAction(hit.point);
-                // _fighter.Cancel();
             }
             return true;
         }
