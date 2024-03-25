@@ -40,26 +40,36 @@ namespace RPG.Control
             if (InteractWithCombat())
             {
                 _timeSinceLastSawPlayer = 0;
-                // _suspicionPosition = _player.transform.position;
+                AttackBehaviour();
                 return;
             }
             
             if (IsSuspicious())
             {
-                // _mover.StartMoveAction(_suspicionPosition);
-                GetComponent<ActionScheduler>().CancelCurrentAction();
+                SuspicionBehaviour();
                 return;
             }
             
-            // if (InteractWithMovement()) return;
-
             if (!InAttackRangeOfPlayer())
             {
-                // _mover.Cancel();
-                _mover.StartMoveAction(_guardPosition);
-                // _fighter.Cancel();
+                GuardBehaviour();
                 return;
             }
+        }
+
+        private void AttackBehaviour()
+        {
+            _fighter.Attack(_player);
+        }
+
+        private void SuspicionBehaviour()
+        {
+            GetComponent<ActionScheduler>().CancelCurrentAction();
+        }
+
+        private void GuardBehaviour()
+        {
+            _mover.StartMoveAction(_guardPosition);
         }
 
         private bool IsSuspicious()
@@ -85,7 +95,6 @@ namespace RPG.Control
             var health = _player?.GetComponent<Health>();
             if (health == null || health.IsDead()) return false;
             
-            _fighter.Attack(_player);
             return true;
         }
 
