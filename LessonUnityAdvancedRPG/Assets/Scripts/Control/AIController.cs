@@ -15,6 +15,7 @@ namespace RPG.Control
         [SerializeField] private float suspicionSecond = 3f;
         [SerializeField] private PatrolPath patrolPath;
         [SerializeField] private float waypointTolerance = 1f;
+        [SerializeField] private float waypointDwellingSecond = 3f;
 
         private Mover _mover;
         private Fighter _fighter;
@@ -25,6 +26,7 @@ namespace RPG.Control
         private Vector3 _suspicionPosition;
         
         private float _timeSinceLastSawPlayer = Mathf.Infinity;
+        private float _timeSinceLastAtWaypoint = Mathf.Infinity;
         
         private void Start()
         {
@@ -41,26 +43,29 @@ namespace RPG.Control
             if (_health?.IsDead() ?? true) return;
             if (InteractWithCombat())
             {
-                _timeSinceLastSawPlayer = 0;
                 AttackBehaviour();
-                return;
             }
-            
-            if (IsSuspicious())
+            else if (_timeSinceLastSawPlayer < suspicionSecond)
             {
                 SuspicionBehaviour();
-                return;
             }
-            
-            if (!InAttackRangeOfPlayer())
+            else if (!InAttackRangeOfPlayer())
             {
                 PatrolBehaviour();
-                return;
             }
+
+            UpdateTimers();
+        }
+
+        private void UpdateTimers()
+        {
+            _timeSinceLastSawPlayer += Time.deltaTime;
+            _timeSinceLastAtWaypoint += Time.deltaTime;   
         }
 
         private void AttackBehaviour()
         {
+            _timeSinceLastSawPlayer = 0;
             _fighter.Attack(_player);
         }
 
@@ -77,10 +82,15 @@ namespace RPG.Control
             {
                 if (AtWaypoint())
                 {
+                    _timeSinceLastAtWaypoint = 0;
                     nextPosition = CycleWaypoint();
                 }
             }
-            _mover.StartMoveAction(nextPosition);
+
+            if (_timeSinceLastAtWaypoint > waypointDwellingSecond)
+            {
+                _mover.StartMoveAction(nextPosition);
+            }
         }
 
         private bool AtWaypoint()
@@ -104,17 +114,6 @@ namespace RPG.Control
         private void SetWaypoint(int i)
         {
             _waypointIndex = i;
-        }
-
-        private bool IsSuspicious()
-        {
-            if (_timeSinceLastSawPlayer < suspicionSecond)
-            {
-                _timeSinceLastSawPlayer += Time.deltaTime;
-                return true;
-            }
-
-            return false;
         }
 
         private bool InAttackRangeOfPlayer()
