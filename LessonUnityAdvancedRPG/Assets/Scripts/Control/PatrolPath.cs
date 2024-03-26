@@ -30,7 +30,7 @@ namespace RPG.Control
             return GetWaypoint(GetNextIndex(i));
         }
 
-        private int GetNextIndex(int inCurrentIndex)
+        public int GetNextIndex(int inCurrentIndex)
         {
             return (inCurrentIndex + 1) % transform.childCount;
         }

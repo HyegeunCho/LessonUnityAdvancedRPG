@@ -13,6 +13,8 @@ namespace RPG.Control
     {
         [SerializeField] private float chaseDistance = 5f;
         [SerializeField] private float suspicionSecond = 3f;
+        [SerializeField] private PatrolPath patrolPath;
+        [SerializeField] private float waypointTolerance = 1f;
 
         private Mover _mover;
         private Fighter _fighter;
@@ -52,7 +54,7 @@ namespace RPG.Control
             
             if (!InAttackRangeOfPlayer())
             {
-                GuardBehaviour();
+                PatrolBehaviour();
                 return;
             }
         }
@@ -67,9 +69,41 @@ namespace RPG.Control
             GetComponent<ActionScheduler>().CancelCurrentAction();
         }
 
-        private void GuardBehaviour()
+        private void PatrolBehaviour()
         {
-            _mover.StartMoveAction(_guardPosition);
+            Vector3 nextPosition = GetCurrentWaypoint();
+
+            if (patrolPath != null)
+            {
+                if (AtWaypoint())
+                {
+                    nextPosition = CycleWaypoint();
+                }
+            }
+            _mover.StartMoveAction(nextPosition);
+        }
+
+        private bool AtWaypoint()
+        {
+            float distanceToWaypoint = Vector3.Distance(transform.position, GetCurrentWaypoint());
+            return distanceToWaypoint < waypointTolerance;
+        }
+
+        private Vector3 CycleWaypoint()
+        {
+            _waypointIndex = patrolPath.GetNextIndex(_waypointIndex);
+            return patrolPath.GetWaypoint(_waypointIndex);
+        }
+
+        private int _waypointIndex = 0;
+        public Vector3 GetCurrentWaypoint()
+        {
+            return patrolPath?.GetWaypoint(_waypointIndex) ?? _guardPosition;
+        }
+
+        private void SetWaypoint(int i)
+        {
+            _waypointIndex = i;
         }
 
         private bool IsSuspicious()
