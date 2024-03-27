@@ -35,7 +35,7 @@ namespace RPG.Combat
             
             if (Vector3.Distance(target.transform.position, transform.position) > weaponRange)
             {
-                GetComponent<Mover>().MoveTo(target.transform.position);
+                GetComponent<Mover>().MoveTo(target.transform.position, 1f);
             }
             else
             {

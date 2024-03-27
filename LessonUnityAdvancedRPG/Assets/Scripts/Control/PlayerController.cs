@@ -56,7 +56,7 @@ namespace RPG.Control
             if (!Physics.Raycast(GetMouseRay(), out RaycastHit hit)) return false;
             if (Input.GetMouseButton(0))
             {
-                _mover.StartMoveAction(hit.point);
+                _mover.StartMoveAction(hit.point, 1f);
             }
             return true;
         }

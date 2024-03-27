@@ -11,6 +11,8 @@ namespace RPG.Movement
     [RequireComponent(typeof(Health))]
     public class Mover : MonoBehaviour, IAction
     {
+        [SerializeField] private float maxSpeed = 6f;
+        
         private NavMeshAgent _agent;
         private Animator _animator;
         private Health _health;
@@ -32,15 +34,16 @@ namespace RPG.Movement
             UpdateAnimator();
         }
 
-        public void StartMoveAction(Vector3 destination)
+        public void StartMoveAction(Vector3 destination, float speedFraction)
         {
             GetComponent<ActionScheduler>().StartAction(this);
-            MoveTo(destination);
+            MoveTo(destination, speedFraction);
         }
         
-        public void MoveTo(Vector3 destination)
+        public void MoveTo(Vector3 destination, float speedFraction)
         {
             _agent.SetDestination(destination);
+            _agent.speed = maxSpeed * Mathf.Clamp01(speedFraction);
             _agent.isStopped = false;
         }
 
@@ -54,13 +57,7 @@ namespace RPG.Movement
             var localVelocity = transform.InverseTransformDirection(_agent.velocity);
             _animator.SetFloat("forwardSpeed", localVelocity.z);
         }
-
-
-        public void StartAction(Transform inTransform)
-        {
-            MoveTo(inTransform.position);
-        }
-
+        
         public void Cancel()
         {
             _agent.isStopped = true;
